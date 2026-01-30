@@ -1,63 +1,55 @@
 import pandas as pd
 from dash import dcc, html
 import dash_bootstrap_components as dbc
-import settings as st
 
 
-df = pd.read_csv('data/df_retro.csv')
+df = pd.read_csv("data/retro_data.csv")
 
 def create_layout():
     return dbc.Container([
-        # Заголовок
         html.Div([
-            html.H1("Рекомендательная система", className="header-title"),
-            html.H2("Исследование дополнительных остеотомий", className="header-description")
-        ], className="header"
-        ),
+            html.H1("Анализ выполнения дополнительных остеотомий", className= "header-title"),
+            html.H2("Исследование ключеывых факторов для определения метатарзалгий при остетомии scarf", className= "header-description")
+    ],className= "header"),
+    dbc.Row([
+        dbc.Col([html.Label("Пол",                             
+                            className= 'filter-label'), 
+                 dcc.Dropdown(id = 'gender-filter',
+                              options = [{'label' : gender, 'value': gender} for gender in df['gender'].unique()],
+                              value = df['gender'].unique(),
+                              className= 'filter-dropdown')]),
+        dbc.Col([html.Label("Степень деформации", 
+                            className= 'filter-label'), 
+                 dcc.Dropdown(id = 'defdegree-filter',
+                              options = [{'label' : defdegree, 'value': defdegree} for defdegree in df['initial_deformation_grade'].unique()],
+                              value = df['initial_deformation_grade'].unique(),
+                              className= 'filter-dropdown')]),
+        dbc.Col([html.Label("Akin", 
+                            className= 'filter-label'), 
+                 dcc.Dropdown(id = 'akin-filter',
+                              options = [{'label' : akin, 'value': akin} for akin in df['is_akin'].unique()],
+                              value = df['is_akin'].unique(),
+                              className= 'filter-dropdown')]),
+        dbc.Col([html.Label("Дополнительные остеотомии", 
+                            className= 'filter-label'), 
+                 dcc.Dropdown(id = 'additional-filter',
+                              options = [{'label' : additional, 'value': additional} for additional in df['is_additional'].unique()],
+                              value = df['is_additional'].unique(),
+                              className= 'filter-dropdown')]),
+             ],className='filters-row'),
 
-        # Фильтры
         dbc.Row([
-            dbc.Col([html.Label("Вид пингвина", className="filter-label"), 
-                     dcc.Dropdown(id="species-filter",
-                                  options=[{'label': s, 'value': s } for s in df['species'].unique()],
-                                  value=df['species'].unique(),
-                                  multi=True, 
-                                  className="filter-dropdown",
-                                  style=st.DROPDOWN_STYLE,
-                                  )], md=4),
+                    dbc.Col([dcc.Graph()]),
+                    dbc.Col([dcc.Graph()])
 
-            dbc.Col([html.Label("Остров обитания", className="filter-label"), 
-                     dcc.Dropdown(id="island-filter", 
-                                  options=[{'label': i, 'value': i } for i in df['island'].unique()],
-                                  value=df['island'].unique(),
-                                  multi=True, 
-                                  className="filter-dropdown", 
-                                  style=st.DROPDOWN_STYLE)], md=4),
+        ]),
+        dbc.Row([
+                    dbc.Col([dcc.Graph()]),
+                    dbc.Col([dcc.Graph()])
 
-            dbc.Col([html.Label("Пол пингвина", className="filter-label"), 
-                     dcc.Dropdown(id="sex-filter",
-                                  options=[{'label': sx, 'value': sx } for sx in df['sex'].unique() if pd.notna(sx)],
-                                  value=df['sex'].dropna().unique(),
-                                  multi=True,   
-                                  className="filter-dropdown", 
-                                  style=st.DROPDOWN_STYLE)], md=4)
-        ], className="filters-row"
-
-        ),
-
-        # Графики
-
-        dbc.Row([dbc.Col([dcc.Graph(id='bill-length-scatter')], md=6), 
-                 dbc.Col([dcc.Graph(id='body-mass-histogram')], md=6)
-                 ]),
-                 
-        dbc.Row([dbc.Col([dcc.Graph(id='flipper-length-box')], md=6), 
-                 dbc.Col([dcc.Graph(id='species-pie')], md=6)
-                 ]),
-
-        #информационная панель
-
-        html.Div(id='stats-panel', className="stats-panel")
+        ])
 
 
-    ], fluid=True)
+
+        ], fluid= True)
+
