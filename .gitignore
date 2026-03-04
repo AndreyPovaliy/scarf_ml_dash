@@ -1,6 +1,6 @@
 my_env1
 data
-deploy.bash
-run.bash
+bash
 notes
 output
+.gitignore

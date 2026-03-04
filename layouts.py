@@ -139,15 +139,9 @@ def create_layout():
     html.Div(id = 'stats-panel', className= 'stats-panel'),
 
         dbc.Row([
-                    dbc.Col([dcc.Graph(id = 'age-scatter')], md = 6),
-                    dbc.Col([dcc.Graph(id = 'gender-pie')], md = 6)
-                    
-
-        ]),
-        dbc.Row([
-                    dbc.Col([dcc.Graph(id = 'aofas_0-histogram')], md = 4),
-                    dbc.Col([dcc.Graph(id = 'sefas_0-box')], md = 4)
-                    
+                    dbc.Col([dcc.Graph(id = 'ima-scatter')], md = 4),
+                    dbc.Col([dcc.Graph(id = 'metatars-pie')], md = 4),
+                    dbc.Col([dcc.Graph(id = 'dmma-scatter')], md = 4)
                     
 
         ])

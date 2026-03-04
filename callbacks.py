@@ -21,10 +21,9 @@ df_n1 = df_n.drop(['metatarsalgia'], axis=1)
 
 def register_callbacks(app):
     @app.callback(
-        Output('age-scatter', 'figure'),
-        Output('aofas_0-histogram', 'figure'),
-        Output('sefas_0-box', 'figure'),
-        Output('gender-pie', 'figure'),
+        Output('ima-scatter', 'figure'),
+        Output('metatars-pie', 'figure'),
+        Output('dmma-scatter', 'figure'),
         Output('stats-panel', 'children'),
         Input('submit-botton', 'n_clicks'),
         State('gender-filter', 'value'),
@@ -105,14 +104,15 @@ def register_callbacks(app):
         avg_vasfa_24 = filtered_df['vasfa_24'].mean()
         avg_moxfq_24 = filtered_df['moxfq_24'].mean()
         avg_sefas_24 = filtered_df['sefas_24'].mean()
-        # gender_counts = filtered_df['gender'].value_counts()
+        avg_fadi_24 = filtered_df['fadi_24'].mean()
+        avg_faam_24 = filtered_df['faam_24'].mean()
         metatarlagia_counts = filtered_df['metatarsalgia'].value_counts()
 
-        age_scatter_fig = go.Figure()
+        ima_scatter_fig = go.Figure()
 
         for metatarsalgia in sorted(filtered_df['metatarsalgia'].unique(), reverse=True):
             metatarsalgia_df = filtered_df[filtered_df['metatarsalgia'] == metatarsalgia]
-            age_scatter_fig.add_trace(go.Scatter(
+            ima_scatter_fig.add_trace(go.Scatter(
                 x = metatarsalgia_df['hva_0'],
                 y = metatarsalgia_df['ima_0'],
                 mode = 'markers',
@@ -123,7 +123,7 @@ def register_callbacks(app):
                     line = dict(width = 1, color = "#c79dd7")
                 )
             ))
-        age_scatter_fig.update_layout(
+        ima_scatter_fig.update_layout(
             title = "Случаи метатарзалгии",
             title_font_size = st.GRAPH_HEADER_FONT_SIZE,
             title_x = st.GRAPH_HEADER_ALIGH,
@@ -144,65 +144,50 @@ def register_callbacks(app):
             plot_bgcolor = st.PLOT_BACKGROUND
         )
 
-        vasfa_0_histogram_fig = go.Figure()
+        dmma_scatter_fig = go.Figure()
 
-        for metatarsalgia in sorted(filtered_df['metatarsalgia'].unique(),reverse= True):
+        for metatarsalgia in sorted(filtered_df['metatarsalgia'].unique(), reverse=True):
             metatarsalgia_df = filtered_df[filtered_df['metatarsalgia'] == metatarsalgia]
-            vasfa_0_histogram_fig.add_trace(go.Histogram(
-                x = metatarsalgia_df['vasfa_24'],
+            dmma_scatter_fig.add_trace(go.Scatter(
+                x = metatarsalgia_df['hvipa_0'],
+                y = metatarsalgia_df['dmma_0'],
+                mode = 'markers',
                 name = metatarsalgia,
-                opacity = 0.7,
-                marker = dict(line = dict(width = 1, color = "#c79dd7"))
+                marker = dict(
+                    size = 10,
+                    opacity = 0.7,
+                    line = dict(width = 1, color = "#c79dd7")
+                )
             ))
-        vasfa_0_histogram_fig.update_layout(
-            title = "Оценка VAS FA",
+        dmma_scatter_fig.update_layout(
+            title = "Случаи метатарзалгии",
             title_font_size = st.GRAPH_HEADER_FONT_SIZE,
             title_x = st.GRAPH_HEADER_ALIGH,
             title_font_weight = st.GRAPH_TITLE_WEIGHTH,
-            xaxis_title = "Баллы",
+            xaxis_title = "HVIPA (градусы)",
             xaxis = dict(title_font_size =st.GRAFT_FONT_SIZE,
                          tickfont = dict(size = st.GRAFT_FONT_SIZE)),
-            yaxis_title = "Количество",
+            yaxis_title = "DMMA (градусы)",
             yaxis = dict(title_font_size =st.GRAFT_FONT_SIZE,
                          tickfont = dict(size = st.GRAFT_FONT_SIZE)),
             font = dict(family = 'Roboto, sans-serif'),
-            barmode = 'overlay',
-            legend = dict(font=dict(size = st.GRAFT_FONT_SIZE)),
+            legend = dict(font=dict(size = st.GRAFT_FONT_SIZE),
+                          orientation = 'h',
+                          yanchor = 'bottom',
+                          y = 1.02,
+                          xanchor = 'right',
+                          x = 1),
             plot_bgcolor = st.PLOT_BACKGROUND
         )
 
-        moxfq_24_box_fig = go.Figure()
-
-        for metatarsalgia, color in zip(filtered_df['metatarsalgia'].unique(),st.MY_PALETTE):
-            metatarsalgia_df = filtered_df[filtered_df['metatarsalgia'] == metatarsalgia]
-            moxfq_24_box_fig.add_trace(go.Box(
-                y = metatarsalgia_df['moxfq_24'],
-                name = metatarsalgia,
-                marker_color = color
-
-            ))
-
-        moxfq_24_box_fig.update_layout(
-            title = "Оценка MOXFQ",
-            title_font_size = st.GRAPH_HEADER_FONT_SIZE,
-            title_x = st.GRAPH_HEADER_ALIGH,
-            title_font_weight = st.GRAPH_TITLE_WEIGHTH,
-            yaxis_title = "Баллы",
-            yaxis = dict(title_font_size =st.GRAFT_FONT_SIZE,
-                         tickfont = dict(size = st.GRAFT_FONT_SIZE)),
-            font = dict(family = 'Roboto, sans-serif'),
-            legend = dict(font=dict(size = st.GRAFT_FONT_SIZE)),
-            plot_bgcolor = st.PLOT_BACKGROUND
-        )
-
-        gender_pie_fig = go.Figure(
+        metatars_pie_fig = go.Figure(
             go.Pie(
                 labels = metatarlagia_counts.index,
                 values = metatarlagia_counts.values,
                 textinfo = 'percent'
             )
         )
-        gender_pie_fig.update_layout(
+        metatars_pie_fig.update_layout(
             title = "Метатарзалгия",
             title_font_size = st.GRAPH_HEADER_FONT_SIZE,
             title_x = st.GRAPH_HEADER_ALIGH,
@@ -338,7 +323,7 @@ def register_callbacks(app):
 
 
         stats_panel = dbc.Card([
-            dbc.CardHeader("Статистика выборки"),
+            dbc.CardHeader("Статистика прогноза"),
             dbc.CardBody([
                 html.H3(f"{way_to}", className="predict"),
                 html.P(f"Всего пациентов: {total_pathients}"),
@@ -346,10 +331,12 @@ def register_callbacks(app):
                 html.P(f"Средний AOFAS на 24 месяц: {avg_aofas_24:.0f}"),
                 html.P(f"Средний VASFA на 24 месяц: {avg_vasfa_24:.0f}"),
                 html.P(f"Средний MOXFQ на 24 месяц: {avg_moxfq_24:.0f}"),
-                html.P(f"Средний SEFAS на 24 месяц: {avg_sefas_24:.0f}")
+                html.P(f"Средний SEFAS на 24 месяц: {avg_sefas_24:.0f}"),
+                html.P(f"Средний FADI на 24 месяц: {avg_fadi_24:.0f}"),
+                html.P(f"Средний FAAM на 24 месяц: {avg_faam_24:.0f}")
                 
             ])
 
         ])
 
-        return age_scatter_fig, vasfa_0_histogram_fig, moxfq_24_box_fig, gender_pie_fig, stats_panel
+        return ima_scatter_fig,  metatars_pie_fig, dmma_scatter_fig, stats_panel
